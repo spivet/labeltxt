@@ -1,0 +1,35 @@
+#lt-box {
+	width: 100%;
+	border: 1px solid #ccc;
+}
+
+#lt-tools {
+	display: flex;
+	height: 50px;
+	border-bottom: 1px solid #ccc;
+}
+
+.lt-tool {
+	flex: 1;
+	height: 50px;
+	text-align: center;
+	line-height: 50px;
+}
+
+.item-colors {
+	display: none;
+	margin: 0;
+	padding: 0;
+}
+.lt-tool-colors:hover .item-colors {
+	display: flex;
+}
+.item-color {
+	flex: 1;
+	height: 50px;
+}
+
+
+.item-colors {
+	list-style: none;	
+}
