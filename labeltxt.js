@@ -57,7 +57,7 @@ var Labeltxt = (function () {
 		var toolsbox = document.createElement('div');
 		toolsbox.id = 'lt-tools';
 		var toolsHtml = `
-			<div class="lt-tool lt-tool-colors">
+			<div class="lt-tool lt-tool-colors" style="background-color:${_self.color}">
 				<ul class="item-colors">
 					<li class="item-color" data-color="#f23" style="background-color: #f23;"></li>
 					<li class="item-color" data-color="#0f2" style="background-color: #0f2;"></li>
@@ -87,9 +87,11 @@ var Labeltxt = (function () {
 
 	function changeColor() {
 		var colors = document.getElementsByClassName('item-color');
+		var tc = document.getElementsByClassName('lt-tool-colors')[0];
 		for(let i = 0; i < colors.length; i++) {
 			colors[i].onclick = function () {
 				_self.color = this.dataset.color;
+				tc.style.backgroundColor = _self.color;
 			}
 		}
 	}
@@ -128,8 +130,10 @@ var Labeltxt = (function () {
 			var text = document.getElementById('lt-text');
 			text.innerHTML = _self.textStack[_self.textStack.length - 1];
 
-			var labelsbox = document.getElementById('lt-labels');
-			labelsbox.removeChild(labelsbox.lastChild)
+			if (_self.config.mode === 'label') {
+				var labelsbox = document.getElementById('lt-labels');
+				labelsbox.removeChild(labelsbox.lastChild)
+			}
 		}
 	}
 	function clean() {
