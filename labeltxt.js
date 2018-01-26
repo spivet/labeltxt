@@ -10,8 +10,7 @@ var Labeltxt = (function () {
 		this.config = Object.assign({}, this.default, opt)
 		this.color = '#f23'
 		this.textStack = [];
-		this.letters = [];
-		this.labels = [];
+		this.letters = []; // 存放被选中的文字内容
 		_self = this;
 
 		init(this.config.el)
@@ -27,16 +26,13 @@ var Labeltxt = (function () {
 		},
 		output: function () {
 			var span = document.getElementsByClassName('text-selected');
+			var obj = {};
 			if (span) {
-				this.labels = [];
 				for(var i = 0; i < span.length; i++) {
-					this.labels.push(span[i].dataset.label || '')
+					obj[span[i].textContent] = span[i].dataset.label
 				}
 			}
-			return {
-				letters: this.letters,
-				labels: this.labels
-			}
+			return obj
 		}
 	}
 
@@ -48,42 +44,77 @@ var Labeltxt = (function () {
 		var ltbox = document.createElement('div');
 		ltbox.id = 'lt-box';
 		el.appendChild(ltbox);
-
-		renderToolsbox(ltbox)
-		renderTextbox(ltbox)
-		if (_self.config.mode === 'label') renderLabelsbox(ltbox)
+		renderUi(ltbox)
+		// renderToolsbox(ltbox)
+		// renderTextbox(ltbox)
+		// if (_self.config.mode === 'label') renderLabelsbox(ltbox)
 	}
-	function renderToolsbox(parent) {
-		var toolsbox = document.createElement('div');
-		toolsbox.id = 'lt-tools';
-		var toolsHtml = `
-			<div class="lt-tool lt-tool-colors" style="background-color:${_self.color}">
-				<ul class="item-colors">
-					<li class="item-color" data-color="#f23" style="background-color: #f23;"></li>
-					<li class="item-color" data-color="#0f2" style="background-color: #0f2;"></li>
-					<li class="item-color" data-color="#3d1" style="background-color: #3d1;"></li>
-					<li class="item-color" data-color="#50f" style="background-color: #50f;"></li>
-				</ul>
+	function renderUi(parent) {
+		var uiHtml = `
+			<div class="lt-wrap">
+				<div class="lt-content">
+					<div id="lt-tools">
+						<div class="lt-tool lt-tool-colors" style="background-color:${_self.color}">
+							<ul class="item-colors">
+								<li class="item-color" data-color="#f23" style="background-color: #f23;"></li>
+								<li class="item-color" data-color="#0f2" style="background-color: #0f2;"></li>
+								<li class="item-color" data-color="#3d1" style="background-color: #3d1;"></li>
+								<li class="item-color" data-color="#50f" style="background-color: #50f;"></li>
+							</ul>
+						</div>
+						<div class="lt-tool lt-tool-repeal">撤销</div>
+					</div>
+					<div id="lt-text"></div>
+				</div>
 			</div>
-			<div class="lt-tool lt-tool-repeal">撤销</div>
-		`
-		toolsbox.innerHTML = toolsHtml
-		parent.appendChild(toolsbox)
-
+			<div id="lt-labels"></div>
+			<div id="lt-mask">
+				<div class="lt-mask-content">
+					<select id="lt-select">
+						<option value="你说">你说</value>
+						<option value="什么">什么</value>
+					</select>
+					<input type="text" id="lt-input" />
+					<button id="lt-select-submit" type"button">确认</button>
+				</div>
+			</div>
+		`;
+		parent.innerHTML = uiHtml;
+		selectText()
 		changeColor()
 		repeal()
 	}
-	function renderTextbox(parent) {
-		var textbox = document.createElement('div');
-		textbox.id = 'lt-text';
-		parent.appendChild(textbox)
-		selectText()
-	}
-	function renderLabelsbox(parent) {
-		var labelsbox = document.createElement('div');
-		labelsbox.id = 'lt-labels';
-		parent.appendChild(labelsbox)
-	}
+	// function renderToolsbox(parent) {
+	// 	var toolsbox = document.createElement('div');
+	// 	toolsbox.id = 'lt-tools';
+	// 	var toolsHtml = `
+	// 		<div class="lt-tool lt-tool-colors" style="background-color:${_self.color}">
+	// 			<ul class="item-colors">
+	// 				<li class="item-color" data-color="#f23" style="background-color: #f23;"></li>
+	// 				<li class="item-color" data-color="#0f2" style="background-color: #0f2;"></li>
+	// 				<li class="item-color" data-color="#3d1" style="background-color: #3d1;"></li>
+	// 				<li class="item-color" data-color="#50f" style="background-color: #50f;"></li>
+	// 			</ul>
+	// 		</div>
+	// 		<div class="lt-tool lt-tool-repeal">撤销</div>
+	// 	`
+	// 	toolsbox.innerHTML = toolsHtml
+	// 	parent.appendChild(toolsbox)
+
+	// 	changeColor()
+	// 	repeal()
+	// }
+	// function renderTextbox(parent) {
+	// 	var textbox = document.createElement('div');
+	// 	textbox.id = 'lt-text';
+	// 	parent.appendChild(textbox)
+	// 	selectText()
+	// }
+	// function renderLabelsbox(parent) {
+	// 	var labelsbox = document.createElement('div');
+	// 	labelsbox.id = 'lt-labels';
+	// 	parent.appendChild(labelsbox)
+	// }
 
 	function changeColor() {
 		var colors = document.getElementsByClassName('item-color');
@@ -113,9 +144,10 @@ var Labeltxt = (function () {
 				var text = document.getElementById('lt-text');
 				_self.textStack.push(text.innerHTML);
 				// 添加标签
-				var ts = document.getElementsByClassName('text-selected')
 				if (_self.config.mode === 'label') {
-					addLabel(ts.length)
+					// var ts = document.getElementsByClassName('text-selected')
+					// addLabel(ts.length)
+					showMask()
 				}
 			}
 		}
@@ -153,20 +185,38 @@ var Labeltxt = (function () {
 		return span;
 	}
 
-	function addLabel(index) {
-		var label = document.createElement('label');
+	function showMask() {
+		var mask = document.getElementById('lt-mask');
+		document.getElementById('lt-mask').style.display = 'block';
+		selectLabel()
+	}
+
+	function selectLabel() {
+		document.getElementById('lt-select-submit').onclick = function () {
+			var input = document.getElementById('lt-input'),
+				select = document.getElementById('lt-select');
+			var value = input.value !== '' ? input.value : select.value;
+			var ts = document.getElementsByClassName('text-selected')
+			addLabel(value, ts.length)
+			input.value = ''
+			document.getElementById('lt-mask').style.display = 'none'
+		}
+	}
+
+	function addLabel(value, index) {
+		var label = document.createElement('div');
 		label.className = 'lt-label';
-		label.innerHTML = `<span class="label-index">${index}. </span> <input class="label-input" type="text">`;
+		label.innerHTML = `<span class="label-index">${index}. </span> ${value}`;
 
 		// _self.labelStack.push(label)
 		var labelsbox = document.getElementById('lt-labels');
 		labelsbox.appendChild(label)
 
-		var input = document.getElementsByClassName('label-input')[index - 1];
-		input.onchange = function () {
+		// var input = document.getElementsByClassName('label-input')[index - 1];
+		// input.onchange = function () {
 			var span = document.getElementsByClassName('text-selected')[index - 1];
-			span.setAttribute('data-label', input.value)
-		}
+			span.setAttribute('data-label', value)
+		// }
 	}
 
 	return Labeltxt;

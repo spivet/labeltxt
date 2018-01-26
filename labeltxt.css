@@ -1,7 +1,35 @@
 #lt-box {
 	position: relative;
 	width: 100%;
+	overflow: hidden;
+}
+
+.lt-wrap {
+	box-sizing: border-box;
+	float: left;
+	width: 100%;
+	padding-right: 220px;
+}
+
+.lt-content {
 	border: 1px solid #ccc;
+	border-radius: 5px;
+	background-color: #fff;
+}
+
+#lt-text {
+	padding: 20px;
+}
+
+#lt-labels {
+	box-sizing: border-box;
+	float: right;
+    width: 200px;
+    height: 500px;
+    margin-left: -200px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
 }
 
 #lt-tools {
@@ -34,15 +62,19 @@
 	height: 50px;
 }
 
-#lt-text {
-	margin-right: 200px;
-}
 
-#lt-labels {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 200px;
-    border-left: 1px solid;
+#lt-mask {
+	display: none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0,0,0,.5);
+}
+.lt-mask-content {
+	width: 200px;
+	padding: 20px;
+	margin: 150px auto 0;
+	background-color: #fff;
 }
