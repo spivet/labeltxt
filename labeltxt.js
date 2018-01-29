@@ -33,6 +33,10 @@ var Labeltxt = (function () {
 				}
 			}
 			return obj
+			// #TODO 加上不同模式下，输出类容的判断
+			// if (_self.config.mode === 'segmentation') {
+			// 	return _self.letters;
+			// }
 		}
 	}
 
@@ -208,15 +212,11 @@ var Labeltxt = (function () {
 		label.className = 'lt-label';
 		label.innerHTML = `<span class="label-index">${index}. </span> ${value}`;
 
-		// _self.labelStack.push(label)
 		var labelsbox = document.getElementById('lt-labels');
 		labelsbox.appendChild(label)
 
-		// var input = document.getElementsByClassName('label-input')[index - 1];
-		// input.onchange = function () {
-			var span = document.getElementsByClassName('text-selected')[index - 1];
-			span.setAttribute('data-label', value)
-		// }
+		var span = document.getElementsByClassName('text-selected')[index - 1];
+		span.setAttribute('data-label', value)
 	}
 
 	return Labeltxt;
